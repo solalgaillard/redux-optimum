@@ -1,6 +1,6 @@
 {
   "private": false,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "name": "redux-optimum",
   "scripts": {
     "build": "rollup -c",
