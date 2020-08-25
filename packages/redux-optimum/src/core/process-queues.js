@@ -42,9 +42,14 @@ function* callAPI(payload, credentialManagement, initialUUID) {
     storeWhenDispatching,
   } = payload;
 
-  const { APICallSettings, HTTPCodesRefreshToken, HTTPCodeFailures, clearAfterAllRetriesFailed } = operation;
+  const {
+    APICallSettings,
+    HTTPCodesRefreshToken,
+    HTTPCodeFailures,
+    clearAfterAllRetriesFailed,
+  } = operation;
 
-  const retriesDelays = operation.retriesDelays;
+  const { retriesDelays } = operation;
   const requestPayload = APICallSettings.payload(
     originalActionPayload,
     storeWhenDispatching,
@@ -61,13 +66,13 @@ function* callAPI(payload, credentialManagement, initialUUID) {
 
     try {
       let result = { response: null, error: null };
-        result = yield call(
-          HttpClient,
-          APICallSettings.endpoint(),
-          APICallSettings.method,
-          requestPayload,
-          APICallSettings.requestParameters
-        );
+      result = yield call(
+        HttpClient,
+        APICallSettings.endpoint(),
+        APICallSettings.method,
+        requestPayload,
+        APICallSettings.requestParameters,
+      );
 
       const { response } = result;
 
@@ -86,43 +91,33 @@ function* callAPI(payload, credentialManagement, initialUUID) {
       throw result;
     }
     catch (result) {
-
-      console.log(result)
-
-
       /*
       EXPECT A PROPERLY FORMATTED OBJECT BUT IF THE FETCH API FAILS
        ITSELF, IT WONT DELIVER>>> SAME THING FOR THE REFRESH TOKEN. THIS
         WILL NEED TO BE ADRESSED AT SOME POINT.
        */
-
       const { error } = result;
 
-      if(HTTPCodeFailures.includes(error.status)) {
+      if (HTTPCodeFailures.includes(error.status)) {
         return result;
       }
 
-      if(HTTPCodesRefreshToken.includes(error.status)) {
-        //const resultRefreshToken = asy authentificationOperations;
-
+      if (HTTPCodesRefreshToken.includes(error.status)) {
+        // const resultRefreshToken = asy authentificationOperations;
         const refreshToken = yield select(
           state => credentialManagement.providingRefreshToken(state),
         );
 
-        if(refreshToken) {
+        if (refreshToken) {
           let resultRefreshToken = { response: null, error: null };
-          console.log(Object.values(credentialManagement.sendingRefreshToken(refreshToken)))
           resultRefreshToken = yield call(
             HttpClient,
-            ...Object.values(credentialManagement.sendingRefreshToken(refreshToken))
+            ...Object.values(
+              credentialManagement.sendingRefreshToken(refreshToken),
+            ),
           );
-          console.log(resultRefreshToken)
         }
-
-
       }
-
-
       /*
        if (
         (Object.prototype.hasOwnProperty.call(error, 'status')
@@ -149,7 +144,6 @@ function* callAPI(payload, credentialManagement, initialUUID) {
         return result;
       }
       */
-
       let j = timeDelay[i];
       while (j > 0) {
         if (isSameUUID) {
@@ -175,19 +169,16 @@ function* callAPI(payload, credentialManagement, initialUUID) {
       }
 
       if (isSameUUID && i === timeDelay.length - 1) {
-
-        if(clearAfterAllRetriesFailed){
+        if (clearAfterAllRetriesFailed) {
           return result;
         }
-        else {
-          yield put({
-            type: 'QueueManager/ADD_ERROR_MESSAGE',
-            message: 'This'
-              + ' seems pretty serious, try again later',
-            retryDelay: 0,
-            uuid: initialUUID,
-          });
-        }
+        yield put({
+          type: 'QueueManager/ADD_ERROR_MESSAGE',
+          message: 'This'
+            + ' seems pretty serious, try again later',
+          retryDelay: 0,
+          uuid: initialUUID,
+        });
       }
 
       i += 1;
@@ -349,6 +340,5 @@ const processQueue = (
     }
   }
 );
-
 
 export default processQueue;

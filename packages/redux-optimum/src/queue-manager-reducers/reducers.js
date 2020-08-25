@@ -32,9 +32,6 @@ const reducer = (
         },
       };
     case 'QueueManager/ADD_TO_QUEUE':
-
-      console.log(payload)
-
       return {
         ...state,
         [payload.operation.actionType]: {
@@ -48,7 +45,6 @@ const reducer = (
         },
       };
     case 'QueueManager/REMOVE_FROM_QUEUE':
-      console.log("REMOVE REMOVE", action.actionType)
       return {
         ...state,
         [action.actionType]: { queue: state[action.actionType].queue.slice(1) },

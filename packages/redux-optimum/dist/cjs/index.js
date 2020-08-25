@@ -3864,13 +3864,11 @@ var reducer = function reducer() {
       });
 
     case 'QueueManager/ADD_TO_QUEUE':
-      console.log(payload);
       return _objectSpread(_objectSpread({}, state), {}, defineProperty({}, payload.operation.actionType, {
         queue: Object.prototype.hasOwnProperty.call(state, payload.operation.actionType) ? [].concat(toConsumableArray(state[payload.operation.actionType].queue), [payload]) : [payload]
       }));
 
     case 'QueueManager/REMOVE_FROM_QUEUE':
-      console.log("REMOVE REMOVE", action.actionType);
       return _objectSpread(_objectSpread({}, state), {}, defineProperty({}, action.actionType, {
         queue: state[action.actionType].queue.slice(1)
       }));
@@ -3990,6 +3988,12 @@ function ownKeys$2(object, enumerableOnly) { var keys = Object.keys(object); if 
 
 function _objectSpread$1(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys$2(Object(source), true).forEach(function (key) { defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys$2(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
+//-------------------------------------------------------------------------------
+// Class Methods to simplify calls to API endpoints.
+//
+// Three methods, a GET, a POST, and a Error Handling method.
+//
+//-------------------------------------------------------------------------------
 var handleErrors = /*#__PURE__*/function () {
   var _ref = asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee(response) {
     var isFetchError,
@@ -4073,9 +4077,12 @@ var HttpClient = function HttpClient(url, method, body, requestParameters) {
       params = objectWithoutProperties(requestParameters, ["headers"]);
 
   var myHeaders = new Headers();
+  Object.keys(headers).forEach(function (property) {
+    return myHeaders.append(property, requestParameters.headers[property]);
+  });
 
   for (var property in headers) {
-    myHeaders.append(property, requestParameters.headers[property]);
+    console.log(property, requestParameters.headers[property]); //myHeaders.append(property, requestParameters.headers[property]);
   }
 
   var allParams = _objectSpread$1(_objectSpread$1({}, params), {}, {
@@ -4084,7 +4091,6 @@ var HttpClient = function HttpClient(url, method, body, requestParameters) {
     body: body
   });
 
-  console.log(allParams, url);
   return fetch(url, allParams).then(function (response) {
     return handleErrors(response);
   })["catch"](function (error) {
@@ -4120,7 +4126,7 @@ function callAPI(payload, credentialManagement, initialUUID) {
 
         case 6:
           if (!(i < timeDelay.length)) {
-            _context.next = 64;
+            _context.next = 59;
             break;
           }
 
@@ -4170,38 +4176,37 @@ function callAPI(payload, credentialManagement, initialUUID) {
         case 24:
           _context.prev = 24;
           _context.t0 = _context["catch"](10);
-          console.log(_context.t0);
+
           /*
           EXPECT A PROPERLY FORMATTED OBJECT BUT IF THE FETCH API FAILS
            ITSELF, IT WONT DELIVER>>> SAME THING FOR THE REFRESH TOKEN. THIS
             WILL NEED TO BE ADRESSED AT SOME POINT.
            */
-
           error = _context.t0.error;
 
           if (!HTTPCodeFailures.includes(error.status)) {
-            _context.next = 30;
+            _context.next = 29;
             break;
           }
 
           return _context.abrupt("return", _context.t0);
 
-        case 30:
+        case 29:
           if (!HTTPCodesRefreshToken.includes(error.status)) {
-            _context.next = 41;
+            _context.next = 38;
             break;
           }
 
-          _context.next = 33;
+          _context.next = 32;
           return select(function (state) {
             return credentialManagement.providingRefreshToken(state);
           });
 
-        case 33:
+        case 32:
           refreshToken = _context.sent;
 
           if (!refreshToken) {
-            _context.next = 41;
+            _context.next = 38;
             break;
           }
 
@@ -4209,15 +4214,13 @@ function callAPI(payload, credentialManagement, initialUUID) {
             response: null,
             error: null
           };
-          console.log(Object.values(credentialManagement.sendingRefreshToken(refreshToken)));
-          _context.next = 39;
+          _context.next = 37;
           return call.apply(void 0, [HttpClient].concat(toConsumableArray(Object.values(credentialManagement.sendingRefreshToken(refreshToken)))));
 
-        case 39:
+        case 37:
           resultRefreshToken = _context.sent;
-          console.log(resultRefreshToken);
 
-        case 41:
+        case 38:
           /*
            if (
             (Object.prototype.hasOwnProperty.call(error, 'status')
@@ -4245,18 +4248,18 @@ function callAPI(payload, credentialManagement, initialUUID) {
           */
           j = timeDelay[i];
 
-        case 42:
+        case 39:
           if (!(j > 0)) {
-            _context.next = 51;
+            _context.next = 48;
             break;
           }
 
           if (!isSameUUID) {
-            _context.next = 46;
+            _context.next = 43;
             break;
           }
 
-          _context.next = 46;
+          _context.next = 43;
           return put({
             type: 'QueueManager/ADD_ERROR_MESSAGE',
             message: 'Oops, we are encountering some difficulties ' + 'communicating with the server',
@@ -4264,22 +4267,22 @@ function callAPI(payload, credentialManagement, initialUUID) {
             uuid: initialUUID
           });
 
-        case 46:
-          _context.next = 48;
+        case 43:
+          _context.next = 45;
           return delay(1000);
 
-        case 48:
+        case 45:
           j -= 1;
-          _context.next = 42;
+          _context.next = 39;
           break;
 
-        case 51:
+        case 48:
           if (!isSameUUID) {
-            _context.next = 54;
+            _context.next = 51;
             break;
           }
 
-          _context.next = 54;
+          _context.next = 51;
           return put({
             type: 'QueueManager/ADD_ERROR_MESSAGE',
             message: 'Retrying previous call',
@@ -4287,21 +4290,21 @@ function callAPI(payload, credentialManagement, initialUUID) {
             uuid: initialUUID
           });
 
-        case 54:
+        case 51:
           if (!(isSameUUID && i === timeDelay.length - 1)) {
-            _context.next = 61;
+            _context.next = 56;
             break;
           }
 
           if (!clearAfterAllRetriesFailed) {
-            _context.next = 59;
+            _context.next = 54;
             break;
           }
 
           return _context.abrupt("return", _context.t0);
 
-        case 59:
-          _context.next = 61;
+        case 54:
+          _context.next = 56;
           return put({
             type: 'QueueManager/ADD_ERROR_MESSAGE',
             message: 'This' + ' seems pretty serious, try again later',
@@ -4309,17 +4312,17 @@ function callAPI(payload, credentialManagement, initialUUID) {
             uuid: initialUUID
           });
 
-        case 61:
+        case 56:
           i += 1;
 
-        case 62:
+        case 57:
           _context.next = 6;
           break;
 
-        case 64:
+        case 59:
           return _context.abrupt("return", false);
 
-        case 65:
+        case 60:
         case "end":
           return _context.stop();
       }

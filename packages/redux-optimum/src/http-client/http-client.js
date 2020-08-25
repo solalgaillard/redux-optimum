@@ -4,15 +4,12 @@
 // Three methods, a GET, a POST, and a Error Handling method.
 //
 //-------------------------------------------------------------------------------
-// import 'babel-polyfill';
-import { v4 as uuidv4 } from 'uuid';
 
 const handleErrors = async (response, isFetchError = false) => {
-
   if (isFetchError) {
     return {
       response: null,
-      error: {status: -1, response},
+      error: { status: -1, response },
     };
   }
 
@@ -28,7 +25,7 @@ const handleErrors = async (response, isFetchError = false) => {
   if (response.status !== 200) {
     return {
       response: null,
-      error: {status: response.status, response: parsedResponse},
+      error: { status: response.status, response: parsedResponse },
     };
   }
 
@@ -36,28 +33,24 @@ const handleErrors = async (response, isFetchError = false) => {
     response: parsedResponse,
     error: null,
   };
-}
-
+};
 
 const HttpClient = (url, method, body, requestParameters) => {
+  const { headers, ...params } = requestParameters;
 
-    const {headers, ...params} = requestParameters;
+  const myHeaders = new Headers();
 
-    const myHeaders = new Headers();
+  Object.keys(headers).forEach(property => (
+    myHeaders.append(property, requestParameters.headers[property])
+  ));
 
-    for (const property in headers) {
-      myHeaders.append(property, requestParameters.headers[property]);
-    }
+  const allParams = {
+    ...params, method, headers: myHeaders, body,
+  };
 
-    const allParams = { ...params, method, headers: myHeaders, body };
-
-    console.log(allParams, url)
-
-    return fetch(url, allParams)
-      .then(response => handleErrors(response))
-      .catch(error => handleErrors(error, true));
-}
-
-
+  return fetch(url, allParams)
+    .then(response => handleErrors(response))
+    .catch(error => handleErrors(error, true));
+};
 
 export default HttpClient;

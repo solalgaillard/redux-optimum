@@ -73,5 +73,4 @@ function* sagasFromConfig(config) {
   );
 }
 
-
 export default sagasFromConfig;
