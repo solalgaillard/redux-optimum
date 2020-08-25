@@ -34,12 +34,13 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import optimisticrc from "../optimisticrc";
 import styles from './simple-flow.scss'
+import Logo from '../../redux-optimum.png'
+import cx from "classnames"
 //-------------------------------------------------------------------------------
 // Component
 //-------------------------------------------------------------------------------
 
 function syntaxHighlight(json) {
-  console.log(json)
   json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
     var cls = 'number';
@@ -62,6 +63,8 @@ const SimpleFlow = ({}) => {
 
   const dispatch = useDispatch();
 
+  const [keyActivated, setKeyActivated] = useState("");
+
   const store = useSelector(store=>store);
   const testKey = useSelector(store=>store.test);
   const queueManager = useSelector(store=>store.QueueManager);
@@ -77,35 +80,62 @@ const SimpleFlow = ({}) => {
       payload: {superdata: 1234, isImportant: false},
       expectedReturn: 500,
       dispatch: () => dispatch({type: "TEST2", payload: apiMapping.TEST.payload})
+    },
+    TEST3: {
+      payload: {superdata: 1234, isImportant: false},
+      expectedReturn: 500,
+      dispatch: () => dispatch({type: "TEST3", payload: apiMapping.TEST.payload})
     }
   } //Per action type
 
   return (
-   <div>
-    <div>
-     {optimisticrc.operations.map(item=> (
-       <div key={item.actionType}>
-         <p>Expected return: {apiMapping[item.actionType].expectedReturn}</p>
-         <p>Payload: {JSON.stringify(apiMapping[item.actionType].payload)}</p>
-        <pre dangerouslySetInnerHTML={{__html:syntaxHighlight(JSON.stringify(item, function(key, value) {
-          if (typeof value === 'function') {
-          return value.toString();
-        } else {
-          return value;
-        }}, 2))}}/>
-         <button onClick={apiMapping[item.actionType].dispatch}>
-           Call API
-         </button>
-       </div>
-         )
-     )
-     }
-   </div>
-    <div>
-      Store:
-      <pre dangerouslySetInnerHTML={{__html:syntaxHighlight(JSON.stringify(store, null, 2))}}/>
-    </div>
-   </div>
+   <>
+     <header>
+       <h1><span>Redux</span> optimum - <span>simple flow</span></h1>
+       <img src={Logo} />
+
+     </header>
+     <div className={styles["main"]}>
+       <div className={styles["left-panel"]}>
+       {optimisticrc.operations.map(item=> (
+         <div key={item.actionType}>
+           <div onClick={()=>keyActivated === item.actionType ? setKeyActivated("") : setKeyActivated(item.actionType)} className={styles.menu}>
+           <div className={cx(styles.hamburger, keyActivated === item.actionType ? styles.active: null)}>
+             <span></span>
+             <span></span>
+             <span></span>
+           </div>
+           <h2>{item.actionType}</h2>
+           </div>
+           {
+             keyActivated === item.actionType && (
+               <>
+               <pre dangerouslySetInnerHTML={{__html:syntaxHighlight(JSON.stringify(item, function(key, value) {
+                   if (typeof value === 'function') {
+                     return value.toString();
+                   } else {
+                     return value;
+                   }}, 2))}}/>
+             <p>Expected return: {apiMapping[item.actionType].expectedReturn}</p>
+             <p>Payload: {JSON.stringify(apiMapping[item.actionType].payload)}</p>
+             <button onClick={apiMapping[item.actionType].dispatch}>
+             Call API
+             </button>
+               </>
+             )
+           }
+
+         </div>
+           )
+       )
+       }
+     </div>
+      <div className={styles["right-panel"]}>
+        Store:
+        <pre dangerouslySetInnerHTML={{__html:syntaxHighlight(JSON.stringify(store, null, 2))}}/>
+      </div>
+     </div>
+   </>
   )
 };
 

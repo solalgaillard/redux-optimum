@@ -126,26 +126,81 @@ const config = {
         },
       },
 
-    }
+    },
+      {
+        actionType: "TEST3",
+        APICallSettings: {
+          endpoint: (originalActionPayload, store) => ApiEndpoints['VALIDATE_ONLY_WITH_TOKEN'],
+          method: 'get',
+          requestParameters: {
+            headers: {"prefer": "code=401"}, //used for
+            // logged in// Content-Type
+            credentials: 'include', //cookie credential optional
+            mode: 'cors'
+          },
+          payload: (originalActionPayload, store) => //(
+          {
+            //object_id: '98',
+            //phone_number: "tresfsdf",
+          }
+          //),
+        },
+        needToBeLoggedIn: false,
+        sendAccessToken: false, //none, header, query, body
+        mode: "every", // or latest, -> just take latest call or queue all calls
+        HTTPCodesRefreshToken: [401], // List of HTTP codes, -1 for browser
+        // failures
+        HTTPCodeFailures: [],
+        retriesDelays: [5, 5], //default // empty no retries
+        // single value means fix interval without interruption
+        //queueUpRequests: true, //Queue up the request or replace them with
+        // the latest -> invalidated by mode
+        clearAfterAllRetriesFailed: true,
+        stages: {
+          begin: {
+            actionType: "TEST_BEGIN",
+            payload: (payload,
+                      storeWhenDispatching,
+                      operation) => (payload)
+          },
+          success: {
+            actionType: "TEST_SUCCESS",
+            payload: (response,
+                      originalActionPayload,
+                      storeWhenDispatching,
+                      operation) => {}
+          },
+          failure: {
+            actionType: "TEST_FAILURE",
+            payload:  (error,
+                       originalActionPayload,
+                       storeWhenDispatching,
+                       operation) => ({test:"test"} ),
+          },
+        },
+
+      }
 
    ],
   credentialManagement: {
     loggedInSelector: (state) => true,
     getAccessToken: (store) => {}, //return tok in obj
-    getRefreshToken: (store) => ({refreshTok: 1234}), //return tok in obj
-    refreshingTokenCallDetails: (token) => ({
+    getRefreshToken: (store) => ({Authorization: 1234}), //return tok in obj
+    refreshingTokenCallDetails: (refreshToken) => ({
       endpoint: ApiEndpoints['Token/REFRESH'],
-      method: "post",
+      method: "get",
       HTTPCodeFailures: [],
       retriesDelays: [10, 30, 60, 180, 300], //default // empty no retries
       //requestPayload: JSON.stringify({send_tok: token}),
       requestParameters: {
-        headers: {"Content-Type": "application/json"}, //used for logged in //Content-Type
+        headers: {"Content-Type": "application/json", ...refreshToken}, //used
+        // for logged in
+        // Content-Type
         mode: 'cors'
       },
     }), // => make api call //Depending on mode, it sends the token with key
     // -> value
-    uponReceivingFreshToken: () => {}, //to store token
+    uponReceivingFreshToken: (body) => {}, //to store token
   }
 }
 
