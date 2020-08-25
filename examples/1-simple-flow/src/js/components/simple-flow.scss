@@ -1,0 +1,23 @@
+//-------------------------------------------------------------------------------
+// Stylesheet targeting the grid of the dashboard including menu animation
+//
+//
+//-------------------------------------------------------------------------------
+
+.api-error-log {
+  position:fixed;
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 1px 1px 1px #ccc;
+  bottom: 80px;
+  left: 50px;
+  background: #fff;
+  z-index: 1200;
+}
+
+pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+.string { color: green; white-space: normal;}
+.number { color: darkorange; }
+.boolean { color: blue; }
+.null { color: magenta; }
+.key { color: red; }
