@@ -25,6 +25,6 @@ export default {
       babelHelpers: 'runtime',
       exclude: 'node_modules/**',
     }),
-    //terser()
+    terser()
   ]
 };

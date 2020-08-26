@@ -1,9 +1,4 @@
 //------------------------------------------------------------------------------
-// Four HOCs so every component can consume wrappers to connect to the store,
-// translations, register all loaded instances of ag-grid to force a re-render,
-// or bring a component into the dedicated modal box wrapper.
-//
-// Load Polyfills before rendering the app (promise-based).
 //
 //------------------------------------------------------------------------------
 
@@ -29,9 +24,6 @@ import { v4 as uuidv4 } from 'uuid';
 import HttpClient from '../http-client';
 
 //------------------------------------------------------------------------------
-// React Render Call in a promise with browser sniffing first in order
-// to load polyfills if needed. HOC for redux-connect, react-i18next,
-// ag-grid, and a modal box.
 //
 //------------------------------------------------------------------------------
 
@@ -118,13 +110,18 @@ function* callAPI(payload, credentialManagement, initialUUID) {
           );
         }
       }
-      /*
+
        if (
         (Object.prototype.hasOwnProperty.call(error, 'status')
-          && error.status === '403')
+          && error.status === '401')
         || error === 'No Token') {
-          // const resultRefreshToken = yield authentificationOperations
-          // .refreshToken();
+
+         /*
+         *  Token refresh ici
+         *
+         * */
+
+          // const resultRefreshToken = yield call(ApiCallsMethods.getAll, ApiCall['Authentification/REFRESH_TOKEN'], true, myHeaders);
 
         if (resultRefreshToken.response) {
           continue;
@@ -143,7 +140,7 @@ function* callAPI(payload, credentialManagement, initialUUID) {
       else if (error.hasOwnProperty('status') && error.status === '400') {
         return result;
       }
-      */
+
       let j = timeDelay[i];
       while (j > 0) {
         if (isSameUUID) {
@@ -169,7 +166,14 @@ function* callAPI(payload, credentialManagement, initialUUID) {
       }
 
       if (isSameUUID && i === timeDelay.length - 1) {
-        if (clearAfterAllRetriesFailed) {
+        if (clearAfterAllRetriesFailed && isSameUUID) {
+          yield put({
+            type: 'QueueManager/REMOVE_ERROR_MESSAGE',
+            message: null,
+            retryDelay: null,
+            uuid: null,
+          });
+
           return result;
         }
         yield put({
@@ -187,9 +191,10 @@ function* callAPI(payload, credentialManagement, initialUUID) {
   return false; // no-return policy eslint
 }
 
-// Company be first api to be called
-// Even on logout so queue it until log_in is called
-// function* queueProcessor(action, credentialManagement) {
+
+//------------------------------------------------------------------------------
+//
+//------------------------------------------------------------------------------
 function* queueProcessor(payload, credentialManagement) {
   const initialUUID = uuidv4();
 
@@ -217,6 +222,8 @@ function* queueProcessor(payload, credentialManagement) {
     if (wentThroughACycle) {
       yield take('All/RetryApiCalls');
     }
+
+    console.log(initialUUID)
 
     // If not start api call
     const apiCall = yield fork(
@@ -250,6 +257,9 @@ function* queueProcessor(payload, credentialManagement) {
       hasBeenCancelledOnce = true;
     }
     else if (finishedApiCall) {
+
+      console.log("DOES IT GO HERE")
+
       return finishedApiCall;
     }
     else {
@@ -259,9 +269,6 @@ function* queueProcessor(payload, credentialManagement) {
 }
 
 //------------------------------------------------------------------------------
-// React Render Call in a promise with browser sniffing first in order
-// to load polyfills if needed. HOC for redux-connect, react-i18next,
-// ag-grid, and a modal box.
 //
 //------------------------------------------------------------------------------
 
@@ -299,6 +306,8 @@ const processQueue = (
           actionType,
         });
 
+        console.log("response", response, error)
+
         if (response) {
           const successPayload = yield operation.stages.success.payload(
             response,
@@ -323,6 +332,7 @@ const processQueue = (
             ...yieldingFailure,
           });
         }
+
       }
       else if (cancelling) {
         const yieldingFailure = yield operation.stages.failure.payload(

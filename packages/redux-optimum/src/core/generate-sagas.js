@@ -1,9 +1,4 @@
 //------------------------------------------------------------------------------
-// Four HOCs so every component can consume wrappers to connect to the store,
-// translations, register all loaded instances of ag-grid to force a re-render,
-// or bring a component into the dedicated modal box wrapper.
-//
-// Load Polyfills before rendering the app (promise-based).
 //
 //------------------------------------------------------------------------------
 
@@ -17,9 +12,6 @@ import {
 import processQueue from './process-queues';
 
 //------------------------------------------------------------------------------
-// React Render Call in a promise with browser sniffing first in order
-// to load polyfills if needed. HOC for redux-connect, react-i18next,
-// ag-grid, and a modal box.
 //
 //------------------------------------------------------------------------------
 
@@ -57,7 +49,7 @@ function* createSaga(operation, credentialManagement) {
       ? takeEvery(operation.actionType, saga)
       : takeLatest(operation.actionType, saga),
 
-    fork(processQueue(
+    yield fork(processQueue(
       `QueueManager/ADD_TO_QUEUE/${operation.actionType}`,
       operation.queueUpRequests,
       credentialManagement,
