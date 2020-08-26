@@ -7,7 +7,7 @@
 
 
 const ApiEndpoints = {
-  'SIMPLE_REQUEST_200': `https://redux-optimistic.stoplight.io/mocks/redux-optimistic/redux-optimistic/1095867/simple-request-success`,
+  'SIMPLE_REQUEST_200': `https://redux-optimistic.stoplight.io/mocks/redux-optimistic/redux-optimum/1095867/simple-request-success`,
   'SIMPLE_REQUEST_500': `https://redux-optimistic.stoplight.io/mocks/redux-optimistic/redux-optimistic/1095867/simple-request-500`,
   'VALIDATE_ONLY_WITH_TOKEN': `https://redux-optimistic.stoplight.io/mocks/redux-optimistic/redux-optimum/1095867/validate-only-with-proper-token`,
   'Token/REFRESH': 'https://redux-optimistic.stoplight.io/mocks/redux-optimistic/redux-optimum/1095867/refresh-token'

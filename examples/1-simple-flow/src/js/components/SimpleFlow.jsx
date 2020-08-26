@@ -1,28 +1,6 @@
-/* eslint-disable */
 //-------------------------------------------------------------------------------
 // Central Node.
 //
-// Uses HMR in the dev environment only, with a conditional require and a
-// conditional HOC on export that requires that we divide their applications
-// in two.
-//
-// The component observes the clientId key in the redux store to determine
-// whether the user is logged in or not (see company selectors).
-//
-// The component fetches the company api on load.
-// If the api cannot be reached and the token cannot be
-// refreshed, it loads the loggedOut node and pre-loads the loggedIn node with
-// loadable.
-// Otherwise, it does the opposite.
-//
-// A Modal box is conditionally rendered at this node level, provided
-// that the component exists. The component is passed as a prop with the HOC
-// getModal. Other deeply nested components can register a modal with the
-// registerModalHOC. It is the only part of the app where the modal will be
-// displayed. It was chosen at this level since it is a common ancestor branch
-// of both the loggedIn and LoggedOut nodes and the modal might also be
-// displayed at some point in the future when the loggedOut branch has been
-// loaded.
 //
 //-------------------------------------------------------------------------------
 
@@ -35,6 +13,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import optimisticrc from "../optimisticrc";
 import styles from './simple-flow.scss'
 import Logo from '../../redux-optimum.png'
+import MITLicense from '../../MIT license.png'
 import cx from "classnames"
 //-------------------------------------------------------------------------------
 // Component
@@ -71,20 +50,20 @@ const SimpleFlow = ({}) => {
 
 
   const apiMapping = {
-    TEST: {
+    SIMPLE_REQUEST_SUCCESS: {
       payload: {superdata: 1234, isImportant: false},
       expectedReturn: 200,
-      dispatch: () => dispatch({type: "TEST", payload: apiMapping.TEST.payload})
+      dispatch: () => dispatch({type: "SIMPLE_REQUEST_SUCCESS", payload: apiMapping.SIMPLE_REQUEST_SUCCESS.payload})
     },
-    TEST2: {
+    SIMPLE_REQUEST_FAILURE: {
       payload: {superdata: 1234, isImportant: false},
       expectedReturn: 500,
-      dispatch: () => dispatch({type: "TEST2", payload: apiMapping.TEST.payload})
+      dispatch: () => dispatch({type: "SIMPLE_REQUEST_FAILURE", payload: apiMapping.SIMPLE_REQUEST_FAILURE.payload})
     },
-    TEST3: {
+    REQUEST_WITH_EXPIRED_TOKEN_REFRESH: {
       payload: {superdata: 1234, isImportant: false},
       expectedReturn: 500,
-      dispatch: () => dispatch({type: "TEST3", payload: apiMapping.TEST.payload})
+      dispatch: () => dispatch({type: "REQUEST_WITH_EXPIRED_TOKEN_REFRESH", payload: apiMapping.REQUEST_WITH_EXPIRED_TOKEN_REFRESH.payload})
     }
   } //Per action type
 
@@ -92,15 +71,16 @@ const SimpleFlow = ({}) => {
    <>
      <header>
        <h1><span>Redux</span> optimum - <span>simple flow</span></h1>
-       <img src={Logo} />
+       <a href="https://github.com/solalgaillard/redux-optimum" target="_blank"><img src={Logo} /></a>
 
      </header>
      <div className={styles["main"]}>
        <div className={styles["left-panel"]}>
+         <h2 className={styles['action-title']}>action.type: </h2>
        {optimisticrc.operations.map(item=> (
-         <div key={item.actionType}>
+         <div className={keyActivated === item.actionType ? styles.active: null} key={item.actionType}>
            <div onClick={()=>keyActivated === item.actionType ? setKeyActivated("") : setKeyActivated(item.actionType)} className={styles.menu}>
-           <div className={cx(styles.hamburger, keyActivated === item.actionType ? styles.active: null)}>
+           <div className={styles.hamburger}>
              <span></span>
              <span></span>
              <span></span>
@@ -109,7 +89,8 @@ const SimpleFlow = ({}) => {
            </div>
            {
              keyActivated === item.actionType && (
-               <>
+               <div className={styles["reducer-specs"]}>
+                 config:
                <pre dangerouslySetInnerHTML={{__html:syntaxHighlight(JSON.stringify(item, function(key, value) {
                    if (typeof value === 'function') {
                      return value.toString();
@@ -117,11 +98,11 @@ const SimpleFlow = ({}) => {
                      return value;
                    }}, 2))}}/>
              <p>Expected return: {apiMapping[item.actionType].expectedReturn}</p>
-             <p>Payload: {JSON.stringify(apiMapping[item.actionType].payload)}</p>
+                 <pre>Payload: <span dangerouslySetInnerHTML={{__html:syntaxHighlight(JSON.stringify(apiMapping[item.actionType].payload), null, 2)}}/></pre>
              <button onClick={apiMapping[item.actionType].dispatch}>
              Call API
              </button>
-               </>
+               </div>
              )
            }
 
@@ -131,10 +112,14 @@ const SimpleFlow = ({}) => {
        }
      </div>
       <div className={styles["right-panel"]}>
-        Store:
+        <h2>current redux store:</h2>
         <pre dangerouslySetInnerHTML={{__html:syntaxHighlight(JSON.stringify(store, null, 2))}}/>
       </div>
      </div>
+     <footer>
+      <img src={MITLicense} />
+       <p>Solal Gaillard - 2020</p>
+     </footer>
    </>
   )
 };

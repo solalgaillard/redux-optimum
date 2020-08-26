@@ -9,56 +9,21 @@
 // Fonts
 //-------------------------------------------------------------------------------
 
-$myriad-pro: "myriad-pro";
 
 //-------------------------------------------------------------------------------
 // Colors
 //-------------------------------------------------------------------------------
-
-$light-green: #7bc9c7;
-$highlight-green: #ebf7f6;
-$light-blue: #bae7e5;
-$highlight-blue: #d8f2f0;
-$teal: #3DB39E;
-$shamrock-green: #008D59;
-$cashplanner-green: #4badaa;
-
-$base-orange: #f16a22;
-$hover-orange: #ff8b1e;
-
-$pumpkin: #f16a22;
-
-$mabel: #c3e6e5;
-$niagara: #3CAC9C;
-
-$attention-red: #d00900;
-$soft-red: #f46f6f;
-$process-red: #E30D00;
-$harley-davidson-orange: #dd3a00;
-
-$super-light-gray: #fafafa;
-$lighter-gray: #e1e1e1;
-$light-gray: #f2f2f2;
 
 $med-gray: #ccc;
 $med-dark-gray: #a9a9a9;
 $deep-gray: #665;
 
 $background-grey: #e4e4e4;
-$border-grey: #c5c5c5;
 
-$inputPadding: 10px;
-$formSpace: 15px;
 
 @mixin error {
   box-shadow: 0 0 4px 1px $attention-red;
 }
-//-------------------------------------------------------------------------------
-// Checkbox
-//-------------------------------------------------------------------------------
-
-$checked-checkbox: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGlkPSJDYXBhXzEiIGRhdGEtbmFtZT0iQ2FwYSAxIiB3aWR0aD0iMTciIGhlaWdodD0iMTciIHZpZXdCb3g9IjAgMCAxNyAxNyI+PGRlZnM+PHN0eWxlPi5jbHMtMXtmaWxsOiNmMTZhMjI7fS5jbHMtMntmaWxsOiNmZmY7fTwvc3R5bGU+PC9kZWZzPjx0aXRsZT5jaGVjay1ib3gtc2VsZWN0ZWQ8L3RpdGxlPjxyZWN0IGNsYXNzPSJjbHMtMSIgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3Ii8+PHBvbHlnb24gY2xhc3M9ImNscy0yIiBwb2ludHM9IjYuNTQgMTEuMjkgMy44MyA4LjU4IDMuMDQgOS4zNyA2LjU0IDEyLjg3IDEzLjk2IDUuNDYgMTMuMTcgNC42NyA2LjU0IDExLjI5Ii8+PC9zdmc+);
-$unchecked-checkbox: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGlkPSJDYXBhXzEiIGRhdGEtbmFtZT0iQ2FwYSAxIiB3aWR0aD0iMTciIGhlaWdodD0iMTcuMDYiIHZpZXdCb3g9IjAgMCAxNyAxNy4wNiI+PGRlZnM+PHN0eWxlPi5jbHMtMXtmaWxsOiNmMTZhMjI7fTwvc3R5bGU+PC9kZWZzPjx0aXRsZT5jaGVjay1ib3gtdW5zZWxlY3RlZDwvdGl0bGU+PHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMTcsMTcuMDZIMFYwSDE3Wm0tMTYtMUgxNlYxSDFaIi8+PC9zdmc+);
 
 //-------------------------------------------------------------------------------
 // Gradients
@@ -74,80 +39,3 @@ $red-gradient-horiz: linear-gradient(to right, #e51600 50%, #e84700);
 
 $input-border-radius: 7px;
 $layout-border-radius: 15px;
-
-//-------------------------------------------------------------------------------
-// Box Shadows
-//-------------------------------------------------------------------------------
-
-$standard-box-shadow: 3px 4px 12px -1px #d8d8d8;
-$medium-box-shadow: 0px 4px 14px -1px #a4a4a4;
-
-//-------------------------------------------------------------------------------
-// Scrollbar
-//-------------------------------------------------------------------------------
-
-@mixin orange-scrollbar {
-  &::-webkit-scrollbar {
-    width: 7px;
-  }
-
-  &::-webkit-scrollbar-thumb:vertical {
-    background: $orange-gradient-vert;
-    border-radius: 10px;
-  }
-}
-
-//-------------------------------------------------------------------------------
-// Compatibility Mixins -
-//
-// Most are for references only as PostCSS autoprefixes everything
-//-------------------------------------------------------------------------------
-
-@mixin appearance($property...) {
-  -moz-appearance: $property;
-  -webkit-appearance: $property;
-}
-
-
-/*=transform($property)
- * -ms-transform: $property
- * -moz-transform: $property
- * -webkit-transform: $property
- * transform: $property */
-
-/*=transform-origin($property)
- * -ms-transform-origin: $property
- * -moz-transform-origin: $property
- * -webkit-transform-origin: $property
- * transform-origin: $property */
-
-/*=transition($property...)
- * -ms-transform-origin: $property
- * -moz-transition: $property
- * -webkit-transition: $property
- * transition: $property */
-
-/*=transition-duration($property...)
- * -ms-transform-origin: $property
- * -moz-transition-duration: $property
- * -webkit-transition-duration: $property
- * transition-duration: $property */
-
-//=transition-transform($duration, $timing, $delay:0s, $preface:webkit moz ms o spec)
-// //@each $browser in $preface
-//     //@if( $browser == spec)
-//         //transition: transform $duration $timing $delay
-//     //@else
-//         //-#{$browser}-transition: -#{$browser}-transform $duration $timing $delay
-
-/*=flex($property)
- * -ms-flex: $property
- * -moz-flex: $property
- * -webkit-flex: $property
- * flex: $property */
-
-/*=flex-direction($property...)
- * -ms-flex-direction: $property
- * -moz-flex-direction: $property
- * -webkit-flex-direction: $property
- * flex-direction: $property */

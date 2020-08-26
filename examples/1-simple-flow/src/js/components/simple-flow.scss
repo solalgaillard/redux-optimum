@@ -15,12 +15,11 @@
   z-index: 1200;
 }
 
-pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
-.string { color: green; white-space: normal;}
-.number { color: darkorange; }
-.boolean { color: blue; }
-.null { color: magenta; }
-.key { color: red; }
+.string { color: #a4e0b4; white-space: normal;}
+.number { color: #ffc3c3; }
+.boolean { color: #b4e2e2; }
+.null { color: #fbbef1; }
+.key { color: #d8dea7; }
 
 header {
   display: flex;
@@ -39,19 +38,35 @@ header {
     }
 
   }
+
+  a {
+    margin-left: auto;
+  }
+
   img {
     height: 100px;
     margin-bottom: 8px;
-    margin-left: auto;
   }
 }
 
 .main {
   display: flex;
+  flex: 1;
   overflow-y: scroll;
   > div {
     width: 50%;
-    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+
+    .action-title {
+      margin-left: 25px;
+    }
+
+    > div{
+      overflow-y: scroll;
+      display: flex;
+      flex-direction: column;
+    }
 
     .menu {
       display: flex;
@@ -67,7 +82,7 @@ header {
         margin-bottom: 5px;
         position: relative;
 
-        background: #cdcdcd;
+        background: #fff;
         border-radius: 3px;
 
         z-index: 1;
@@ -85,19 +100,63 @@ header {
       span:nth-last-child(2) {
         transform-origin: 0% 100%;
       }
+    }
 
-      &.active span {
+    .active {
+      flex: 1;
+      .hamburger {
+        span {
         opacity: 1;
         transform: rotate(45deg) translate(-7px, -14px);
       }
-
-      &.active span:nth-last-child(3) {
-        opacity: 0;
-        transform: rotate(0deg) scale(0.2, 0.2);
+        span:nth-last-child(3) {
+          opacity: 0;
+          transform: rotate(0deg) scale(0.2, 0.2);
+        }
+        span:nth-last-child(2) {
+          transform: rotate(-45deg) translate(-6px, 13px);
+        }
       }
 
-      &.active span:nth-last-child(2) {
-        transform: rotate(-45deg) translate(-6px, 13px);
+
+    }
+
+
+    pre{
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 5px;
+      margin: 15px;
+      margin-left: 5px;
+    }
+
+    .reducer-specs {
+      display: flex;
+      flex-direction: column;
+      overflow-y: scroll;
+      margin-left: 15px;
+
+      pre {
+        margin-left: auto;
+        margin-right: 15px;
+      }
+
+      pre:first-child {
+        margin: 15px;
+        margin-left: 5px;
+      }
+
+      p {
+        margin-left: auto;
+        margin-right: 15px;
+      }
+      button {
+        color: #5a5a5a;
+        cursor: pointer;
+        margin-right: 15px;
+        margin-bottom: 15px;
+        margin-top: 15px;
+        padding: 5px;
       }
     }
 
@@ -106,5 +165,28 @@ header {
       cursor: pointer;
       color: #fff;
     }
+
+    &:last-child {
+      overflow-y: scroll;
+    }
+
+  }
+}
+
+
+footer {
+  height: 50px;
+  margin-top: auto;
+  background-color: #fff;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  img {
+    margin-right: 15px;
+    height: 25px;
+  }
+  p {
+    color: #5a5a5a;
+    margin-right: 15px;
   }
 }

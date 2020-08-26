@@ -24,7 +24,7 @@ const config = {
     //Add default for every operations.
     operations : [
       {
-        actionType: "TEST",
+        actionType: "SIMPLE_REQUEST_SUCCESS",
         APICallSettings: {
           endpoint: (originalActionPayload, store) => ApiEndpoints['SIMPLE_REQUEST_200'],
           method: 'get',
@@ -53,20 +53,20 @@ const config = {
         clearAfterAllRetriesFailed: false,
         stages: {
           begin: {
-            actionType: "TEST_BEGIN",
+            actionType: "SIMPLE_REQUEST_SUCCESS_BEGIN",
             payload: (payload,
                       storeWhenDispatching,
                       operation) => (payload)
           },
           success: {
-            actionType: "TEST_SUCCESS",
+            actionType: "SIMPLE_REQUEST_SUCCESS_SUCCESS",
             payload: (response,
                       originalActionPayload,
                       storeWhenDispatching,
                       operation) => {}
           },
           failure: {
-            actionType: "TEST_FAILURE",
+            actionType: "SIMPLE_REQUEST_SUCCESS_FAILURE",
             payload:  (error,
                        originalActionPayload,
                        storeWhenDispatching,
@@ -76,7 +76,7 @@ const config = {
 
     },
     {
-      actionType: "TEST2",
+      actionType: "SIMPLE_REQUEST_FAILURE",
       APICallSettings: {
         endpoint: (originalActionPayload, store) => ApiEndpoints['SIMPLE_REQUEST_500'],
         method: 'get',
@@ -105,20 +105,20 @@ const config = {
       clearAfterAllRetriesFailed: true,
       stages: {
         begin: {
-          actionType: "TEST_BEGIN",
+          actionType: "SIMPLE_REQUEST_FAILURE_BEGIN",
           payload: (payload,
                     storeWhenDispatching,
                     operation) => (payload)
         },
         success: {
-          actionType: "TEST_SUCCESS",
+          actionType: "SIMPLE_REQUEST_FAILURE_SUCCESS",
           payload: (response,
                     originalActionPayload,
                     storeWhenDispatching,
                     operation) => {}
         },
         failure: {
-          actionType: "TEST_FAILURE",
+          actionType: "SIMPLE_REQUEST_FAILURE_FAILURE",
           payload:  (error,
                      originalActionPayload,
                      storeWhenDispatching,
@@ -128,7 +128,7 @@ const config = {
 
     },
       {
-        actionType: "TEST3",
+        actionType: "REQUEST_WITH_EXPIRED_TOKEN_REFRESH",
         APICallSettings: {
           endpoint: (originalActionPayload, store) => ApiEndpoints['VALIDATE_ONLY_WITH_TOKEN'],
           method: 'get',
@@ -158,20 +158,20 @@ const config = {
         clearAfterAllRetriesFailed: true,
         stages: {
           begin: {
-            actionType: "TEST_BEGIN",
+            actionType: "REQUEST_WITH_EXPIRED_TOKEN_REFRESH_BEGIN",
             payload: (payload,
                       storeWhenDispatching,
                       operation) => (payload)
           },
           success: {
-            actionType: "TEST_SUCCESS",
+            actionType: "REQUEST_WITH_EXPIRED_TOKEN_REFRESH_SUCCESS",
             payload: (response,
                       originalActionPayload,
                       storeWhenDispatching,
                       operation) => {}
           },
           failure: {
-            actionType: "TEST_FAILURE",
+            actionType: "REQUEST_WITH_EXPIRED_TOKEN_REFRESH_FAILURE",
             payload:  (error,
                        originalActionPayload,
                        storeWhenDispatching,
