@@ -1,8 +1,8 @@
 <img src='./logo/redux-optimum.svg' alt='Redux Optimistic Landscape' width='800px'>
 
-## redux-optimum
+## redux-Optimum
 
-`redux-optimum` is a library which aims is to make UI optimistic data fetching incredibly easy. Give it some endpoints \(and all the settings they need\) and it will provide you with the _redux actions_ you might want for each stage during the process of calling an API. Furthermore, `redux-optimum` provides you with an API queue manager. You can state wether or not you want to retry a call, how many times and when, or if you simply want to revert the data upon failure and abandon it. The library also allows you to centralize in one place all the definitions of these API calls and then worry about implementing the reducers any way you normally would. The queue manager has its own key in the store and provides you with all the info you might need so you can see what requests are being processed, if there are any errors, as well as any countdown till the next retry. Thus, allowing you to provide helpful feedback to your users.
+`redux-Optimum` is a library which aims is to make UI optimistic data fetching incredibly easy. Give it some endpoints \(and all the settings they need\) and it will provide you with the _redux actions_ you might want for each stage during the process of calling an API. Furthermore, `redux-optimum` provides you with an API queue manager. You can state wether or not you want to retry a call, how many times and when, or if you simply want to revert the data upon failure and abandon it. The library also allows you to centralize in one place all the definitions of these API calls and then worry about implementing the reducers any way you normally would. The queue manager has its own key in the store and provides you with all the info you might need so you can see what requests are being processed, if there are any errors, as well as any countdown till the next retry. Thus, allowing you to provide helpful feedback to your users.
 
 The library offers a credential management system where you can, upon an API call failure, decide to refresh a token \(using any HTTP code you might wish\). You can also queue up all calls to certain endpoints until the user logs in.
 
@@ -12,7 +12,7 @@ This library is built on top of the `redux-saga` redux middleware. This kind of 
 
 ### Install
 
-```text
+```sh
 $ npm install redux-optimum
 ```
 
@@ -24,7 +24,7 @@ You want to call an endpoint and have your global store be notified the call has
 
 Wouldn't that be great to have all that with minimum configuration? Well, you can. Centralize all your definitions in one config file.
 
-```text
+```js
 const config = {
     operations : [
       {
@@ -76,7 +76,7 @@ First, we will try to understand the generic settings for any operation. These a
 
 **config.js**
 
-```text
+```js
 credentialManagement: {
     loggedInSelector: (state) => true,
     providingAccessToken: (store) => {}, //Return obj, key value
@@ -85,25 +85,25 @@ credentialManagement: {
   }
 ```
 
-```text
+```js
 loggedInSelector: (state) => aBoolean
 ```
 
 The loggedInSelector method allows for a selector to be given to the queue manager. The queue manager expects the method to return a boolean and it defaults to true if not defined. The whole store is passed to it so you can extract this information easily if you already have it in the store. The idea behind it is to let you decide how you consider a user logged in and to give the queue manager this information.
 
-```text
+```js
 getAccessToken: (store) => {propertyName: aString}, //Return obj, key value
 ```
 
 getAccessToken makes you responsible for returning the access token in a dictionary form. It can be grabbed from the store, or from a global storage place \(local storage or cookie\). It expects the token to be a string and will use the property name, however it is used in the operation, whether within a header, a json, or a query parameter.
 
-```text
+```js
 sendingRefreshToken: (store) => ({refreshTok: 1234}) //make api call
 ```
 
 sendingRefreshToken behaves exactly the same way as getAccessToken. The only difference is that it will be processed not at the operation level but in the refreshingTokenCallDetails.
 
-```text
+```js
 refreshingTokenCallDetails: () => ({
                                         endpoint: ApiEndpoints['Token/REFRESH'],
                                         method: "post",
@@ -119,13 +119,13 @@ refreshingTokenCallDetails: () => ({
 
 uponReceivingToken.
 
-```text
+```js
 uponReceivingToken: () => {}, //Return obj, key value
 ```
 
 uponReceivingToken.
 
-```text
+```js
 operations : [
       {
         actionType: "TEST",
@@ -188,7 +188,7 @@ APICallSettings: object Contain all the settings required to complete the approp
 
 **createStore.js**
 
-```text
+```js
 import 'regenerator-runtime/runtime';
 import test from './test'
 import {
