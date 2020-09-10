@@ -138,16 +138,16 @@ sendingRefreshToken behaves exactly the same way as getAccessToken. The only dif
 
 ```js
 refreshingTokenCallDetails: () => ({
-                                        endpoint: ApiEndpoints['Token/REFRESH'],
-                                        method: "post",
-                                        HTTPCodeFailures: [],
-                                        retriesDelays: [10, 30, 60, 180, 300], //default // empty no retries
-                                        //requestPayload: JSON.stringify({send_tok: token}),
-                                        requestParameters: {
-                                          headers: {"Content-Type": "application/json"}, //used for logged in //Content-Type
-                                          mode: 'cors'
-                                        },
-                                      }) //Return obj, key value
+    endpoint: ApiEndpoints['Token/REFRESH'],
+    method: "post",
+    HTTPCodeFailures: [],
+    retriesDelays: [10, 30, 60, 180, 300], //default // empty no retries
+    //requestPayload: JSON.stringify({send_tok: token}),
+    requestParameters: {
+      headers: {"Content-Type": "application/json"}, //used for logged in //Content-Type
+      mode: 'cors'
+    },
+    }) //Return obj, key value
 ```
 
 uponReceivingToken.
