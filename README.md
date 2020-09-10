@@ -217,11 +217,9 @@ export {store}
 
 * [French](https://#) Soon to come
 
-```text
-
+```sh
 # Building examples from sources
 
-```sh
 $ git clone https://github.com/solalgaillard/redux-optimistic.git
 $ cd redux-optimum
 
@@ -233,7 +231,7 @@ Below are the examples ported \(so far\) from the Redux repos.
 
 Under Construction
 
-```text
+```sh
 $ npm run simple-flow
 
 # run unit test for simple-flow
