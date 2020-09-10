@@ -10,7 +10,7 @@
 // Import Directives
 //-------------------------------------------------------------------------------
 import 'regenerator-runtime/runtime'; //Need it ?
-import lastActionDispatched from './actions-dispatched'
+import lastActionDispatched from './last-action-dispatched'
 import {
   combineReducersOptimistic,
   createStoreOptimistic} from 'redux-optimum/dist/es'
