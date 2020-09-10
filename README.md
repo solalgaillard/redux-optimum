@@ -26,49 +26,82 @@ Wouldn't that be great to have all that with minimum configuration? Well, you ca
 
 ```js
 const config = {
+    //Add default for every operations.
     operations : [
       {
-        reducer_name: "TEST",
-        endpoint: ApiEndpoints['Company/TEST'],
-        method: 'get',
-        need_to_be_logged_in: false,
-        fetch_parameters: {
-          headers: null, //used for logged in
-          withCredentials: true, //cookie credential optional
-          mode: 'cors'
+        actionType: "SIMPLE_REQUEST_SUCCESS",
+        APICallSettings: {
+          endpoint: (originalActionPayload, store) => ApiEndpoints['SIMPLE_REQUEST_200'],
+          method: 'get',
+          requestParameters: {
+            headers: {"Content-Type": "application/json"}, //used for logged in //Content-Type
+            credentials: 'include', //cookie credential optional
+            mode: 'cors'
+          },
+          payload: (originalActionPayload, store) => //(
+            {
+              //object_id: '98',
+              //phone_number: "tresfsdf",
+            }
+          //),
         },
-        queue_up_requests: true,
-        request_payload: (payload, store) => (
-          {
-            object_id: '98',
-            phone_number: "tresfsdf",
-          }
-        ),
+        needToBeLoggedIn: false,
+        sendAccessToken: false, //none, header, query, body
+        mode: "every", // or latest, -> just take latest call or queue all calls
+        HTTPCodesRefreshToken: [-1], // List of HTTP codes, -1 for browser
+        // failures
+        HTTPCodeFailures: [],
+        retriesDelays: [10, 30, 60, 180, 300], //default // empty no retries
+        // single value means fix interval without interruption
+        //queueUpRequests: true, //Queue up the request or replace them with
+        // the latest -> invalidated by mode
+        clearAfterAllRetriesFailed: false,
         stages: {
           begin: {
-            reducer_name: "TEST_BEGIN",
-            payload: payload => (payload)
+            actionType: "SIMPLE_REQUEST_SUCCESS_BEGIN",
+            payload: (payload,
+                      storeWhenDispatching,
+                      operation) => (payload)
           },
           success: {
-            reducer_name: "TEST_SUCCESS",
-            payload: () => {}
+            actionType: "SIMPLE_REQUEST_SUCCESS_SUCCESS",
+            payload: (response,
+                      originalActionPayload,
+                      storeWhenDispatching,
+                      operation) => {}
           },
           failure: {
-            reducer_name: "TEST_FAILURE",
-            payload:  (error, company, endpoint) => [ {...company, error: [...company.error, {[endpoint]: error}]} ],
+            actionType: "SIMPLE_REQUEST_SUCCESS_FAILURE",
+            payload:  (error,
+                       originalActionPayload,
+                       storeWhenDispatching,
+                       operation) => ({test:"test"} ),
           },
         },
-        mode: "every" // or latest
+
     }
 
    ],
-  credential_management: {
-    logged_in_selector: (state) => true,
-    refresh_token: true,
-    retries_delays: [10, 30, 60, 180, 300], //default
-    sending_refresh_token: () => {},
-    upon_receiving_token: () => {}, //to store token
-  }
+  credentialManagement: {
+      loggedInSelector: (state) => true,
+      getAccessToken: (store) => {}, //return tok in obj
+      getRefreshToken: (store) => ({Authorization: 1234}), //return tok in obj
+      refreshingTokenCallDetails: (refreshToken) => ({
+        endpoint: ApiEndpoints['Token/REFRESH'],
+        method: "get",
+        HTTPCodeFailures: [],
+        retriesDelays: [10, 30, 60, 180, 300], //default // empty no retries
+        //requestPayload: JSON.stringify({send_tok: token}),
+        requestParameters: {
+          headers: {"Content-Type": "application/json", ...refreshToken}, //used
+          // for logged in
+          // Content-Type
+          mode: 'cors'
+        },
+      }), // => make api call //Depending on mode, it sends the token with key
+      // -> value
+      uponReceivingFreshToken: (body) => {}, //to store token
+    }
 }
 ```
 
