@@ -216,7 +216,7 @@ export {store}
 
 # Documentation
 
-- [Under Construction](https://#)
+- [Full Doc is available here](https://solalgaillard.gitbook.io/redux-optimum/)
 
 # Translation
 
