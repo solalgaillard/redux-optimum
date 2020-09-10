@@ -1,4 +1,4 @@
-# Read Me
+<img src='./logo/redux-optimum.svg' alt='Redux Optimistic Landscape' width='800px'>
 
 ## redux-optimum
 
