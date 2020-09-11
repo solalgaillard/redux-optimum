@@ -202,7 +202,7 @@ function* callAPI(payload, credentialManagement, initialUUID) {
 
         if (resultRefreshToken.response) {
 
-          uponReceivingFreshToken
+          //uponReceivingFreshToken
 
           continue;
         }
