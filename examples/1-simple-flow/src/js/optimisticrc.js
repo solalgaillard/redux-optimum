@@ -41,7 +41,7 @@ const config = {
           //),
         },
         needToBeLoggedIn: false,
-        sendAccessToken: false, //none, header, query, body
+        sendsAccessToken: "none", //none, header, query, body
         mode: "every", // or latest, -> just take latest call or queue all calls
         HTTPCodesRefreshToken: [-1], // List of HTTP codes, -1 for browser
         // failures
@@ -93,7 +93,7 @@ const config = {
         //),
       },
       needToBeLoggedIn: false,
-      sendAccessToken: false, //none, header, query, body
+      sendsAccessToken: "none", //none, header, query, body
       mode: "every", // or latest, -> just take latest call or queue all calls
       HTTPCodesRefreshToken: [-1], // List of HTTP codes, -1 for browser
       // failures
@@ -133,7 +133,8 @@ const config = {
           endpoint: (originalActionPayload, store) => ApiEndpoints['VALIDATE_ONLY_WITH_TOKEN'],
           method: 'get',
           requestParameters: {
-            headers: {"prefer": "code=401"}, //used for
+            headers: {"Content-Type": "application/json"},
+            //headers: {"prefer": "code=401"}, //used for
             // logged in// Content-Type
             credentials: 'include', //cookie credential optional
             mode: 'cors'
@@ -146,7 +147,7 @@ const config = {
           //),
         },
         needToBeLoggedIn: false,
-        sendAccessToken: false, //none, header, query, body
+        sendsAccessToken: "header", //none, header, query, body
         mode: "every", // or latest, -> just take latest call or queue all calls
         HTTPCodesRefreshToken: [401], // List of HTTP codes, -1 for browser
         // failures
@@ -184,23 +185,30 @@ const config = {
    ],
   credentialManagement: {
     loggedInSelector: (state) => true,
-    getAccessToken: (store) => {}, //return tok in obj
+    getAccessToken: (store) => {
+      let token = localStorage.getItem('prefer');
+      return {prefer: token ? token : "code=401"}
+
+    }, //return tok in obj
     getRefreshToken: (store) => ({Authorization: 1234}), //return tok in obj
-    refreshingTokenCallDetails: (refreshToken) => ({
+    sendsRefreshToken: "header",
+    refreshingTokenCallDetails: {
       endpoint: ApiEndpoints['Token/REFRESH'],
       method: "get",
       HTTPCodeFailures: [],
       retriesDelays: [10, 30, 60, 180, 300], //default // empty no retries
-      //requestPayload: JSON.stringify({send_tok: token}),
+      requestPayload: null,
       requestParameters: {
-        headers: {"Content-Type": "application/json", ...refreshToken}, //used
+        headers: {"Content-Type": "application/json"}, //used
         // for logged in
         // Content-Type
         mode: 'cors'
       },
-    }), // => make api call //Depending on mode, it sends the token with key
+    }, // => make api call //Depending on mode, it sends the token with key
     // -> value
-    uponReceivingFreshToken: (body) => {}, //to store token
+    uponReceivingFreshToken: (body) => {
+      localStorage.setItem("prefer", "code=200")
+    }, //to store token
   }
 }
 

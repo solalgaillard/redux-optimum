@@ -27,6 +27,28 @@ import HttpClient from '../http-client';
 //
 //------------------------------------------------------------------------------
 
+
+const expandParams = (endpoint, requestPayload, requestParams, modeToken, token) => {
+  let newEndpoint = endpoint;
+  let newRequestPayload = requestPayload;
+  let newRequestParameters = requestParams;
+  switch(modeToken) {
+    case "endpoint":
+      newEndpoint = new URL(newEndpoint);
+      Object.keys(token).forEach(key=>newEndpoint.searchParams.set(key, token[key]));
+      newEndpoint = newEndpoint.href;
+      break
+    case "header":
+      newRequestParameters = {...newRequestParameters, headers: {...newRequestParameters.headers, ...token} };
+      break;
+    case "body":
+      newRequestPayload = {...newRequestPayload, ...token};
+      break;
+  }
+
+  return {endpoint: newEndpoint, requestPayload: newRequestPayload, requestParameters: newRequestParameters}
+}
+
 function* callAPI(payload, credentialManagement, initialUUID) {
   const {
     operation,
@@ -38,6 +60,7 @@ function* callAPI(payload, credentialManagement, initialUUID) {
     APICallSettings,
     HTTPCodesRefreshToken,
     HTTPCodeFailures,
+    sendsAccessToken,
     clearAfterAllRetriesFailed,
   } = operation;
 
@@ -47,6 +70,8 @@ function* callAPI(payload, credentialManagement, initialUUID) {
     storeWhenDispatching,
   );
 
+
+
   const timeDelay = retriesDelays;
   let i = 0;
 
@@ -55,15 +80,43 @@ function* callAPI(payload, credentialManagement, initialUUID) {
       state => !state.QueueManager.error.uuid
         || (state.QueueManager.error.uuid === initialUUID),
     );
+    const token = yield select(
+      state =>  credentialManagement.getAccessToken(state)
+    );
+
+    console.log(token)
 
     try {
       let result = { response: null, error: null };
+
+
+      let endpoint = APICallSettings.endpoint();
+      let newRequestPayload = requestPayload;
+      let requestParameters = APICallSettings.requestParameters;
+
+
+      if(token && sendsAccessToken !== "none") {
+          let expandParameters = expandParams(
+            endpoint,
+            newRequestPayload,
+            requestParameters,
+            sendsAccessToken,
+            token
+        );
+        endpoint = expandParameters.endpoint;
+        newRequestPayload = expandParameters.requestPayload;
+        requestParameters = expandParameters.requestParameters;
+
+      }
+
+
+
       result = yield call(
         HttpClient,
-        APICallSettings.endpoint(),
+        endpoint,
         APICallSettings.method,
-        requestPayload,
-        APICallSettings.requestParameters,
+        newRequestPayload,
+        requestParameters,
       );
 
       const { response } = result;
@@ -90,6 +143,8 @@ function* callAPI(payload, credentialManagement, initialUUID) {
        */
       const { error } = result;
 
+      console.log("test", error)
+
       if (HTTPCodeFailures.includes(error.status)) {
         return result;
       }
@@ -97,17 +152,43 @@ function* callAPI(payload, credentialManagement, initialUUID) {
       if (HTTPCodesRefreshToken.includes(error.status)) {
         // const resultRefreshToken = asy authentificationOperations;
         const refreshToken = yield select(
-          state => credentialManagement.providingRefreshToken(state),
-        );
+          state =>  credentialManagement.getRefreshToken(state)
+          );
 
-        if (refreshToken) {
+        const {refreshingTokenCallDetails, sendsRefreshToken, uponReceivingFreshToken} = credentialManagement
+
+
+
+        if(refreshToken && sendsRefreshToken !== "none") {
           let resultRefreshToken = { response: null, error: null };
+
+          let { endpoint, requestPayload, method, requestParameters} = refreshingTokenCallDetails;
+
+          let expandParameters = expandParams(
+            endpoint,
+            requestPayload,
+            requestParameters,
+            sendsRefreshToken,
+            refreshToken
+          );
+          endpoint = expandParameters.endpoint;
+          requestPayload = expandParameters.requestPayload;
+          requestParameters = expandParameters.requestParameters;
+
+
+
           resultRefreshToken = yield call(
             HttpClient,
-            ...Object.values(
-              credentialManagement.sendingRefreshToken(refreshToken),
-            ),
+            endpoint,
+            method,
+            requestPayload,
+            requestParameters
           );
+
+          uponReceivingFreshToken(resultRefreshToken.response);
+
+          console.log(resultRefreshToken)
+
         }
       }
 
@@ -116,14 +197,13 @@ function* callAPI(payload, credentialManagement, initialUUID) {
           && error.status === '401')
         || error === 'No Token') {
 
-         /*
-         *  Token refresh ici
-         *
-         * */
 
           // const resultRefreshToken = yield call(ApiCallsMethods.getAll, ApiCall['Authentification/REFRESH_TOKEN'], true, myHeaders);
 
         if (resultRefreshToken.response) {
+
+          uponReceivingFreshToken
+
           continue;
         }
         else if (
