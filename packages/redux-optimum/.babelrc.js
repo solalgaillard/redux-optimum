@@ -12,6 +12,6 @@ module.exports = {
   "presets": [
     "@babel/preset-env",
   ],
-  "plugins": ["@babel/plugin-transform-runtime", "@babel/plugin-proposal-class-properties"//because of httpclient to remove eventually
+  "plugins": ["@babel/plugin-transform-runtime", "rewire", "@babel/plugin-proposal-class-properties"//because of httpclient to remove eventually
   ]
 }

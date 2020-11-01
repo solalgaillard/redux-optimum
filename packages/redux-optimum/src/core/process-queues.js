@@ -27,27 +27,46 @@ import HttpClient from '../http-client';
 //
 //------------------------------------------------------------------------------
 
+const aSpecificSelectorToBeMocked = (
+  (state, initialUUID) => !state.QueueManager.error.uuid
+    || (state.QueueManager.error.uuid === initialUUID)
+);
 
-const expandParams = (endpoint, requestPayload, requestParams, modeToken, token) => {
+const expandParams = (
+  endpoint,
+  requestPayload,
+  requestParams,
+  modeToken,
+  token,
+) => {
   let newEndpoint = endpoint;
   let newRequestPayload = requestPayload;
   let newRequestParameters = requestParams;
-  switch(modeToken) {
-    case "endpoint":
+  switch (modeToken) {
+    case 'endpoint':
       newEndpoint = new URL(newEndpoint);
-      Object.keys(token).forEach(key=>newEndpoint.searchParams.set(key, token[key]));
+      Object
+        .keys(token)
+        .forEach(key => newEndpoint.searchParams.set(key, token[key]));
       newEndpoint = newEndpoint.href;
-      break
-    case "header":
-      newRequestParameters = {...newRequestParameters, headers: {...newRequestParameters.headers, ...token} };
       break;
-    case "body":
-      newRequestPayload = {...newRequestPayload, ...token};
+    case 'header':
+      newRequestParameters = {
+        ...newRequestParameters,
+        headers: { ...newRequestParameters.headers, ...token },
+      };
+      break;
+    default: // case "body"
+      newRequestPayload = { ...newRequestPayload, ...token };
       break;
   }
 
-  return {endpoint: newEndpoint, requestPayload: newRequestPayload, requestParameters: newRequestParameters}
-}
+  return {
+    endpoint: newEndpoint,
+    requestPayload: newRequestPayload,
+    requestParameters: newRequestParameters,
+  };
+};
 
 function* callAPI(payload, credentialManagement, initialUUID) {
   const {
@@ -70,46 +89,34 @@ function* callAPI(payload, credentialManagement, initialUUID) {
     storeWhenDispatching,
   );
 
-
-
   const timeDelay = retriesDelays;
   let i = 0;
 
   while (i < timeDelay.length) {
-    const isSameUUID = yield select(
-      state => !state.QueueManager.error.uuid
-        || (state.QueueManager.error.uuid === initialUUID),
-    );
-    const token = yield select(
-      state =>  credentialManagement.getAccessToken(state)
-    );
+    const isSameUUID = yield select(aSpecificSelectorToBeMocked, initialUUID);
 
-    console.log(token)
+    const token = yield select(
+      state => credentialManagement.getAccessToken(state),
+    );
 
     try {
       let result = { response: null, error: null };
-
-
       let endpoint = APICallSettings.endpoint();
       let newRequestPayload = requestPayload;
-      let requestParameters = APICallSettings.requestParameters;
+      let { requestParameters } = APICallSettings;
 
-
-      if(token && sendsAccessToken !== "none") {
-          let expandParameters = expandParams(
-            endpoint,
-            newRequestPayload,
-            requestParameters,
-            sendsAccessToken,
-            token
+      if (token && sendsAccessToken !== 'none') {
+        const expandParameters = expandParams(
+          endpoint,
+          newRequestPayload,
+          requestParameters,
+          sendsAccessToken,
+          token,
         );
         endpoint = expandParameters.endpoint;
         newRequestPayload = expandParameters.requestPayload;
         requestParameters = expandParameters.requestParameters;
-
       }
-
-
 
       result = yield call(
         HttpClient,
@@ -132,92 +139,74 @@ function* callAPI(payload, credentialManagement, initialUUID) {
         }
         return result;
       }
-
       throw result;
     }
     catch (result) {
-      /*
-      EXPECT A PROPERLY FORMATTED OBJECT BUT IF THE FETCH API FAILS
-       ITSELF, IT WONT DELIVER>>> SAME THING FOR THE REFRESH TOKEN. THIS
-        WILL NEED TO BE ADRESSED AT SOME POINT.
-       */
       const { error } = result;
-
-      console.log("test", error)
 
       if (HTTPCodeFailures.includes(error.status)) {
         return result;
       }
 
+      let resultRefreshToken = { response: null, error: null };
       if (HTTPCodesRefreshToken.includes(error.status)) {
-        // const resultRefreshToken = asy authentificationOperations;
         const refreshToken = yield select(
-          state =>  credentialManagement.getRefreshToken(state)
-          );
+          state => credentialManagement.getRefreshToken(state),
+        );
 
-        const {refreshingTokenCallDetails, sendsRefreshToken, uponReceivingFreshToken} = credentialManagement
+        const {
+          refreshingTokenCallDetails,
+          sendsRefreshToken,
+          uponReceivingFreshToken,
+        } = credentialManagement;
 
-
-
-        if(refreshToken && sendsRefreshToken !== "none") {
-          let resultRefreshToken = { response: null, error: null };
-
-          let { endpoint, requestPayload, method, requestParameters} = refreshingTokenCallDetails;
-
-          let expandParameters = expandParams(
+        if (refreshToken && sendsRefreshToken !== 'none') {
+          let {
             endpoint,
-            requestPayload,
+            requestParameters,
+          } = refreshingTokenCallDetails;
+
+          const expandParameters = expandParams(
+            endpoint,
+            refreshingTokenCallDetails.requestPayload,
             requestParameters,
             sendsRefreshToken,
-            refreshToken
+            refreshToken,
           );
           endpoint = expandParameters.endpoint;
-          requestPayload = expandParameters.requestPayload;
           requestParameters = expandParameters.requestParameters;
-
-
 
           resultRefreshToken = yield call(
             HttpClient,
             endpoint,
-            method,
-            requestPayload,
-            requestParameters
+            refreshingTokenCallDetails.method,
+            expandParameters.requestPayload,
+            requestParameters,
           );
 
           uponReceivingFreshToken(resultRefreshToken.response);
-
-          console.log(resultRefreshToken)
-
         }
       }
 
-       if (
-        (Object.prototype.hasOwnProperty.call(error, 'status')
+      if ((Object.prototype.hasOwnProperty.call(error, 'status')
           && error.status === '401')
         || error === 'No Token') {
-
-
-          // const resultRefreshToken = yield call(ApiCallsMethods.getAll, ApiCall['Authentification/REFRESH_TOKEN'], true, myHeaders);
-
         if (resultRefreshToken.response) {
-
-          //uponReceivingFreshToken
-
           continue;
         }
         else if (
           Object.prototype.hasOwnProperty.call(
             resultRefreshToken.error,
-            'status'
+            'status',
           )
           && resultRefreshToken.error.status === '401') {
-          yield put(authentificationActions.logOut());
+          // yield put(authentificationActions.logOut());
         }
         i += 1;
         break; // NEED TO NORMALIZE THE CALL
       }
-      else if (error.hasOwnProperty('status') && error.status === '400') {
+      else if (Object.prototype.hasOwnProperty.call(error, 'status')
+        && error.status === '400') {
         return result;
       }
 
@@ -271,7 +260,6 @@ function* callAPI(payload, credentialManagement, initialUUID) {
   return false; // no-return policy eslint
 }
 
-
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
@@ -282,14 +270,6 @@ function* queueProcessor(payload, credentialManagement) {
   let wentThroughACycle = false;
 
   while (true) {
-    // const isLoggedIn = yield select(credentialManagement.logged_in_selector);
-
-    /*
-    if (!isLoggedIn) {
-      // yield take(authentificationTypes.LOG_IN)
-    }
-    */
-
     // Block as well if not logged in
     if (navigator.onLine === false) {
       yield put({
@@ -302,8 +282,6 @@ function* queueProcessor(payload, credentialManagement) {
     if (wentThroughACycle) {
       yield take('All/RetryApiCalls');
     }
-
-    console.log(initialUUID)
 
     // If not start api call
     const apiCall = yield fork(
@@ -337,9 +315,6 @@ function* queueProcessor(payload, credentialManagement) {
       hasBeenCancelledOnce = true;
     }
     else if (finishedApiCall) {
-
-      console.log("DOES IT GO HERE")
-
       return finishedApiCall;
     }
     else {
@@ -351,7 +326,6 @@ function* queueProcessor(payload, credentialManagement) {
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
-
 const processQueue = (
   queueName,
   multipleCallsBuffered = false,
@@ -386,8 +360,6 @@ const processQueue = (
           actionType,
         });
 
-        console.log("response", response, error)
-
         if (response) {
           const successPayload = yield operation.stages.success.payload(
             response,
@@ -412,7 +384,6 @@ const processQueue = (
             ...yieldingFailure,
           });
         }
-
       }
       else if (cancelling) {
         const yieldingFailure = yield operation.stages.failure.payload(

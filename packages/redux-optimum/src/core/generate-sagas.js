@@ -15,18 +15,20 @@ import processQueue from './process-queues';
 //
 //------------------------------------------------------------------------------
 
+// Move somewhere else
+const allSelector = state => state;
+
 // Implement queue_up_requests = false as param
 const processOperation = operation => (
   function* (action) {
     const { type, ...payload } = action;
 
-    const storeWhenDispatching = yield select(state => state);
+    const storeWhenDispatching = yield select(allSelector);
 
-    const beginPayload = yield operation.stages.begin.payload(
+    const beginPayload = yield call(operation.stages.begin.payload,
       payload,
       storeWhenDispatching,
-      operation,
-    );
+      operation);
 
     yield put({
       type: operation.stages.begin.actionType,
@@ -45,11 +47,11 @@ const processOperation = operation => (
 function* createSaga(operation, credentialManagement) {
   const saga = processOperation(operation);
   yield all([
-    yield operation.mode === 'every'
+    operation.mode === 'every'
       ? takeEvery(operation.actionType, saga)
       : takeLatest(operation.actionType, saga),
 
-    yield fork(processQueue(
+    fork(processQueue(
       `QueueManager/ADD_TO_QUEUE/${operation.actionType}`,
       operation.queueUpRequests,
       credentialManagement,

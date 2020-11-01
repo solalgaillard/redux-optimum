@@ -1,18 +1,16 @@
 //-------------------------------------------------------------------------------
-// Class Methods to simplify calls to API endpoints.
 //
-// Three methods, a GET, a POST, and a Error Handling method.
+// Basic wrapper around browser errors
 //
 //-------------------------------------------------------------------------------
 
-const handleErrors = async (response, isFetchError = false) => {
-  if (isFetchError) {
-    return {
-      response: null,
-      error: { status: -1, response },
-    };
-  }
+const handleFetchErrors = async error => (
+  {
+    response: null,
+    error: { status: -1, error },
+  });
 
+const handleSuccess = async response => {
   let parsedResponse;
 
   if (response.headers.get('content-type') === 'application/json') {
@@ -49,8 +47,8 @@ const HttpClient = (url, method, body, requestParameters) => {
   };
 
   return fetch(url, allParams)
-    .then(response => handleErrors(response))
-    .catch(error => handleErrors(error, true));
+    .then(response => handleSuccess(response))
+    .catch(error => handleFetchErrors(error));
 };
 
 export default HttpClient;

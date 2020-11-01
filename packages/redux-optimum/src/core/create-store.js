@@ -29,7 +29,6 @@ const combineReducersOptimistic = args => (
 const createStoreOptimistic = (appReducer, config) => {
   function* rootSaga() {
     yield all([
-      // authentificationOperations.watchAll(),
       watcherOfflineOnlineEvent(),
       sagasFromConfig(config),
     ]);
