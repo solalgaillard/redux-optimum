@@ -31,6 +31,7 @@
     "eslint": "^7.4.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jest": "^24.1.0",
     "jest": "^26.1.0",
     "redux-saga-test-plan": "^4.0.1",
     "rollup-plugin-eslint": "^7.0.0",

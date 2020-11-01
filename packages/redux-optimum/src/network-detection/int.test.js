@@ -1,53 +1,46 @@
-import {
+import { expectSaga } from 'redux-saga-test-plan';
+/* eslint-disable import/named */
+import watcherOfflineOnlineEvent, {
   __RewireAPI__ as networkDetection,
-  default as watcherOfflineOnlineEvent
-} from "./network-detection";
-import {expectSaga} from "redux-saga-test-plan";
+} from './network-detection';
+/* eslint-enable import/named */
 
-
-describe('Network Detection Integration Testing', () => {
-
-
+describe('network Detection Integration Testing', () => {
   function provideEvent(event) {
     let consumed = false;
 
     return {
       take({ channel }, next) {
-        if (channel === networkDetection.__get__("getNetworkEventChannel") && !consumed) {
+        if (channel === networkDetection.__get__('getNetworkEventChannel')
+          && !consumed) {
           consumed = true;
           return event;
         }
-
         return next();
       },
     };
   }
 
-  it('Browser Turns Online', () => {
-    const fakeEvent = {browserIsOnline: true};
+  it('browser Turns Online', async () => {
+    const fakeEvent = { browserIsOnline: true };
 
-    return expectSaga(watcherOfflineOnlineEvent)
-
+    await expectSaga(watcherOfflineOnlineEvent)
       .provide([
         provideEvent(fakeEvent),
       ])
-      .put({type: 'Event/ONLINE'})
+      .put({ type: 'Event/ONLINE' })
 
       .silentRun();
   });
 
+  it('browser Turns Offline', async () => {
+    const fakeEvent = { browserIsOnline: false };
 
-  it('Browser Turns Offline', () => {
-    const fakeEvent = {browserIsOnline: false};
-
-
-    return expectSaga(watcherOfflineOnlineEvent)
+    await expectSaga(watcherOfflineOnlineEvent)
       .provide([
         provideEvent(fakeEvent),
       ])
-      .put({type: 'Event/OFFLINE'})
-
+      .put({ type: 'Event/OFFLINE' })
       .silentRun();
   });
-
 });
