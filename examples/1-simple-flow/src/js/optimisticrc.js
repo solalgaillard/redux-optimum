@@ -30,7 +30,7 @@ const config = {
           method: 'get',
           requestParameters: {
             headers: {"Content-Type": "application/json"}, //used for logged in //Content-Type
-            credentials: 'include', //cookie credential optional
+            //credentials: 'include', //cookie credential optional
             mode: 'cors'
           },
           payload: (originalActionPayload, store) => //(
@@ -43,7 +43,7 @@ const config = {
         needToBeLoggedIn: false,
         sendsAccessToken: "none", //none, header, query, body
         mode: "every", // or latest, -> just take latest call or queue all calls
-        HTTPCodesRefreshToken: [-1], // List of HTTP codes, -1 for browser
+        HTTPCodesRefreshToken: [], // List of HTTP codes, -1 for browser
         // failures
         HTTPCodeFailures: [],
         retriesDelays: [10, 30, 60, 180, 300], //default // empty no retries
@@ -82,7 +82,7 @@ const config = {
         method: 'get',
         requestParameters: {
           headers: {"Content-Type": "application/json"}, //used for logged in //Content-Type
-          credentials: 'include', //cookie credential optional
+          //credentials: 'include', //cookie credential optional
           mode: 'cors'
         },
         payload: (originalActionPayload, store) => //(
@@ -95,7 +95,7 @@ const config = {
       needToBeLoggedIn: false,
       sendsAccessToken: "none", //none, header, query, body
       mode: "every", // or latest, -> just take latest call or queue all calls
-      HTTPCodesRefreshToken: [-1], // List of HTTP codes, -1 for browser
+      HTTPCodesRefreshToken: [], // List of HTTP codes, -1 for browser
       // failures
       HTTPCodeFailures: [],
       retriesDelays: [5, 5], //default // empty no retries
@@ -130,13 +130,13 @@ const config = {
       {
         actionType: "REQUEST_WITH_EXPIRED_TOKEN_REFRESH",
         APICallSettings: {
-          endpoint: (originalActionPayload, store) => ApiEndpoints['VALIDATE_ONLY_WITH_TOKEN'],
+          endpoint: (originalActionPayload, store) => "https://redux-optimistic.stoplight.io/mocks/redux-optimistic/redux-optimum/1095867/validate-only-with-proper-token",
           method: 'get',
           requestParameters: {
             headers: {"Content-Type": "application/json"},
             //headers: {"prefer": "code=401"}, //used for
             // logged in// Content-Type
-            credentials: 'include', //cookie credential optional
+            //credentials: 'include', //cookie credential optional
             mode: 'cors'
           },
           payload: (originalActionPayload, store) => //(
@@ -149,7 +149,7 @@ const config = {
         needToBeLoggedIn: false,
         sendsAccessToken: "header", //none, header, query, body
         mode: "every", // or latest, -> just take latest call or queue all calls
-        HTTPCodesRefreshToken: [401], // List of HTTP codes, -1 for browser
+        HTTPCodesRefreshToken: [-1, 401], // List of HTTP codes, -1 for browser
         // failures
         HTTPCodeFailures: [],
         retriesDelays: [5, 5], //default // empty no retries
