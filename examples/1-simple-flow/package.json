@@ -1,7 +1,7 @@
 {
   "name": "SimpleFlow",
   "private": true,
-  "version": "1.0.4",
+  "version": "1.0.5",
   "license": "MIT",
   "contributors": [
     {
@@ -129,7 +129,7 @@
     "react-virtualized": "^9.21.1",
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
-    "redux-optimum": "^1.0.4",
+    "redux-optimum": "^1.0.5",
     "redux-persist": "^6.0.0",
     "redux-saga": "^1.1.1",
     "redux-thunk": "^2.3.0",
